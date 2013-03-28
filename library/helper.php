@@ -183,20 +183,6 @@ class helper {
         return $key;
     }
 
-    static function sendMail($sendto, $from, $subject, $content, $ishtml = true, $charset = "utf-8") {
-        $transport = new Zend_Mail_Transport_Smtp('210.17.38.109');
-        $mail = new Zend_Mail($charset);
-        $mail->addTo($sendto);
-        $mail->setFrom($from, "新浪台灣客服中心");
-        $mail->setSubject($subject);
-        if ($ishtml) {
-            $mail->setBodyHtml($content);
-        } else {
-            $mail->setBodyText($content);
-        }
-        return $mail->send($transport);
-    }
-
     static function get_ios_version() {
         $ua = $_SERVER['HTTP_USER_AGENT'];
 
@@ -208,86 +194,6 @@ class helper {
         $p = strpos($ua, ' OS ') + 4;
 
         return str_replace('_', '.', substr($ua, $p, strpos($ua, ' ', $p) - $p));
-    }
-
-    //瀑布流微博话题搜索
-    static function getTopics($topic, $nPage = 1, $haspic = false) {
-        $weiboApi = new weiBoApi(false, false, Zend_Json::TYPE_ARRAY);
-        //get topic data--start
-        $parameters = array(
-            'source' => 2667332353,
-            'sid' => 'tw_weibo',
-            'page' => $nPage,
-            'q' => $topic,
-            'istag' => 2,
-            //'province' => 71,
-            'dup' => 0,
-            'antispam' => 0,
-            'count' => 50,
-        );
-
-        if ($haspic) {
-            $parameters['haspic'] = 1;
-        }
-
-        $weibo_data = $weiboApi->search_statuses($topic, $parameters);
-
-        //get topic data--end
-        //convert friend.created_at;
-        if (isset($weibo_data['statuses'])) {
-            foreach ($weibo_data['statuses'] as $key => $record) {
-                if (isset($record['created_at'])) {
-                    $record['created_at'] = self::date2before($record['created_at']);
-                    $weibo_data['statuses'][$key] = $record;
-                };
-            };
-        };
-        return $weibo_data;
-//        return array(
-//            'statuses' => $weibo_data->statuses,
-//            'total_number' => $weibo_data->total_number
-//        );
-    }
-
-    //友好时间
-    static function date2before($inp) {
-        $time = strtotime($inp);
-        $diff = time() - $time;
-        if (date("m.d.y") == date("m.d.y", $time)) {
-            return '今天 ' . date('G:i', $time);
-        } else {
-            if ($diff < 0) {
-                return '不久的將來';
-            } elseif ($diff < 60) {
-                return $diff . '秒前';
-            } elseif ($diff < 3600) {
-                return floor($diff / 60) . '分鐘前';
-            } elseif ($diff < 31536000) {
-                return date('n月j日 G:i', $time);
-            } else {
-                return date('Y-n-j G:i', $time);
-            }
-        }
-    }
-
-    static function initSmarty($template, $compile, $cache, $left = '<{', $right = '}>') {
-        set_include_path(implode(":", array(get_include_path(), realpath(dirname(__FILE__) . '/Smarty'))));
-        require_once(realpath(dirname(__FILE__) . "/Smarty") . "/Smarty.class.php");
-        $smarty = new Smarty();
-        $smarty->template_dir = !empty($template) ? $template : TEMPLATE_DIR;
-        $smarty->compile_dir = !empty($compile) ? $compile : COMPILER_DIR;
-        $smarty->cache_dir = !empty($cache) ? $cache : CACHE_DIR;
-        $smarty->left_delimiter = $left;
-        $smarty->right_delimiter = $right;
-        return $smarty;
-    }
-
-    static function checkMobile() {
-        $agent = empty($_SERVER['HTTP_USER_AGENT']) ? false : $_SERVER['HTTP_USER_AGENT'];
-        if ($agent) {
-            
-        }
-        return false;
     }
 
     static function cleanText($string) {

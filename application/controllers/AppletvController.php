@@ -17,8 +17,6 @@ class AppletvController extends Zend_Controller_Action {
     public function init() {
 //        $this->_front = Zend_Controller_Front::getInstance();
 //        $this->_front->setParam("noViewRenderer", true);
-//        Zend_Debug::dump($this->_request);
-//        exit;
     }
 
     public function indexAction() {
