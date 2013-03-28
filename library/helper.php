@@ -27,15 +27,6 @@ class helper {
         exit;
     }
 
-    static public function checkReferer() {
-        $check = new checkReffer();
-        if (!$check->check_referer()) {
-            $result = array("error" => 5000, "msg" => "Error: unaccepted request! Wrong Referer!");
-            $callback = isset($_GET['callback']) ? trim($_GET['callback']) : false;
-            helper::show_json($result, $callback);
-        }
-    }
-
     static function unserializeInfo($value, $key) {
         $value[$key] = unserialize($value[$key]);
         return $value;
